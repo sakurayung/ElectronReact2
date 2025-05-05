@@ -59,7 +59,7 @@ function App() {
               loadItems(); // Reload the list after successful save
               setCurrentItem(null); // Clear editing state
               return true; // Indicate success to the form
-            }
+             }
        else {
          // This case might not happen if backend throws error instead
          setError(`Failed to ${isUpdating ? 'update' : 'add'} item (backend reported failure).`);
