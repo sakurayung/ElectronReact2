@@ -1,21 +1,24 @@
 // src/App.js
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation, Link } from 'react-router-dom'; // Added Link import
 
-import ItemForm from './ItemForm'; // Keep your existing components
+import ItemForm from './ItemForm';
 import ItemList from './ItemList';
-import LoginPage from './LoginPage'; // Import the new Login page
+import LoginPage from './LoginPage';
+import AnalyticsPage from './AnalyticsPage'; // Make sure this is imported
+import BulkUpdatePage from './BulkUpdatePage'; // Make sure this is imported
+import InitialImportPage from './InitialImportPage'; // Make sure this is imported
 
 // --- Main Application Component (Inventory View) ---
-// We extract the original App content into its own component
 function InventoryApp({ currentUser, onLogout }) {
     const [items, setItems] = useState(null);
     const [currentItem, setCurrentItem] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const navigate = useNavigate(); // Hook for navigation actions
+    // const navigate = useNavigate(); // Removed as it wasn't used here
 
     const loadItems = useCallback(async () => {
+        // ... (loadItems implementation remains the same) ...
         console.log('React: Requesting items...');
         setIsLoading(true);
         setError(null);
@@ -37,6 +40,7 @@ function InventoryApp({ currentUser, onLogout }) {
     }, [loadItems]);
 
     const handleSaveItem = async (itemData) => {
+        // ... (handleSaveItem implementation remains the same) ...
         setError(null);
         const isUpdating = !!itemData.id;
         try {
@@ -65,6 +69,7 @@ function InventoryApp({ currentUser, onLogout }) {
     };
 
     const handleDeleteItem = async (itemId) => {
+        // ... (handleDeleteItem implementation remains the same) ...
         if (window.confirm('Are you sure you want to delete this item?')) {
             setError(null);
             try {
@@ -86,6 +91,7 @@ function InventoryApp({ currentUser, onLogout }) {
     };
 
     const handleEditItem = (item) => {
+        // ... (handleEditItem implementation remains the same) ...
         console.log('React: Setting item to edit:', item);
         setError(null);
         setCurrentItem(item);
@@ -93,19 +99,18 @@ function InventoryApp({ currentUser, onLogout }) {
     };
 
     const handleCancelEdit = () => {
+        // ... (handleCancelEdit implementation remains the same) ...
         setCurrentItem(null);
     };
 
-    // --- Logout Handler ---
     const handleLogout = async () => {
+        // ... (handleLogout implementation remains the same) ...
         console.log("InventoryApp: Logging out...");
         try {
             await window.electronAPI.logout();
             onLogout(); // Call the function passed from AppRouter to clear state
-            // Navigation back to login is handled by AppRouter's protected route
         } catch (err) {
             console.error("Logout error:", err);
-            // Optionally show an error message to the user
             setError("Failed to log out properly.");
         }
     };
@@ -114,24 +119,35 @@ function InventoryApp({ currentUser, onLogout }) {
         <div className="container">
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <h1>Inventory Management</h1>
-                <div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     {currentUser && (
                         <span style={{ marginRight: '1rem', color: 'var(--color-text-muted)' }}>
                             Logged in as: {currentUser.username} ({currentUser.role})
                         </span>
                     )}
-                    <button onClick={handleLogout} className="button button-secondary">Logout</button>
-                </div>
+                     {/* Admin Links/Buttons */}
+                        {currentUser?.role === 'admin' && (
+                            <>
+                                <Link to="/analytics" className="button button-primary" style={{ marginRight: '0.5rem' }}>
+                                    Analytics
+                                </Link>
+                                {/* CHANGE CLASS HERE */}
+                                <Link to="/bulk-update" className="button button-primary" style={{ marginRight: '0.5rem' }}>
+                                    Bulk Update
+                                </Link>
+                                {/* CHANGE CLASS HERE */}
+                                <Link to="/initial-import" className="button button-primary" style={{ marginRight: '0.5rem' }}>
+                                    Initial Import
+                                </Link>
+                            </>
+                        )}
+                        {/* Logout Button */}
+                        {/* CHANGE CLASS HERE */}
+                        <button onClick={handleLogout} className="button button-primary">Logout</button>              </div>
             </header>
 
             <main>
-                {/* Display role-specific content (Example) */}
-                {currentUser?.role === 'admin' && (
-                    <div className="card" style={{ marginBottom: '1rem', backgroundColor: '#e7f3ff' }}>
-                        Admin Controls Area (Placeholder)
-                    </div>
-                )}
-
+                {/* Removed the placeholder Admin Controls Area card */}
                 <ItemForm
                     onSubmit={handleSaveItem}
                     onCancelEdit={handleCancelEdit}
@@ -151,8 +167,6 @@ function InventoryApp({ currentUser, onLogout }) {
                                 onEdit={handleEditItem}
                                 onDelete={handleDeleteItem}
                                 userRole={currentUser?.role}
-                                // Pass role if needed for conditional rendering in ItemList
-                                // userRole={currentUser?.role}
                             />
                         )}
                     </div>
@@ -163,79 +177,73 @@ function InventoryApp({ currentUser, onLogout }) {
 }
 
 // --- Protected Route Component ---
-// This component checks if the user is logged in.
-// If yes, it renders the requested component (children).
-// If not, it redirects to the login page.
 function ProtectedRoute({ user, children }) {
-    const location = useLocation(); // Get current location
-
+    // ... (ProtectedRoute implementation remains the same) ...
+    const location = useLocation();
     if (!user) {
-        // Redirect them to the /login page, but save the current location they were
-        // trying to go to. This allows redirecting back after login (optional).
         console.log("ProtectedRoute: No user found, redirecting to /login");
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
-
-    // If logged in, render the child component (e.g., InventoryApp)
     return children;
 }
-
 
 // --- Main Router Component ---
 function AppRouter() {
     const [currentUser, setCurrentUser] = useState(null);
-    const [authChecked, setAuthChecked] = useState(false); // State to track if initial auth check is done
+    const [authChecked, setAuthChecked] = useState(false);
 
-    // Check login status when the app loads
     useEffect(() => {
+        // ... (useEffect for auth check remains the same) ...
         const checkAuth = async () => {
             console.log("AppRouter: Checking initial authentication status...");
             try {
                 const user = await window.electronAPI.getCurrentUser();
                 console.log("AppRouter: Received current user:", user);
                 if (user) {
-                    setCurrentUser(user); // Set user if already logged in (e.g., app restart)
+                    setCurrentUser(user);
                 } else {
                     setCurrentUser(null);
                 }
             } catch (error) {
                 console.error("Error checking auth status:", error);
-                setCurrentUser(null); // Assume not logged in on error
+                setCurrentUser(null);
             } finally {
-                setAuthChecked(true); // Mark auth check as complete
+                setAuthChecked(true);
             }
         };
         checkAuth();
-    }, []); // Empty dependency array ensures this runs only once on mount
+    }, []);
 
-    // Function called by LoginPage on successful login
     const handleLoginSuccess = (user) => {
+        // ... (handleLoginSuccess implementation remains the same) ...
         console.log("AppRouter: Login successful, setting user:", user);
         setCurrentUser(user);
     };
 
-    // Function called by InventoryApp on logout
     const handleLogout = () => {
+        // ... (handleLogout implementation remains the same) ...
         console.log("AppRouter: Logout requested, clearing user.");
         setCurrentUser(null);
-        // Navigation to /login happens automatically via ProtectedRoute
     };
 
-    // Show loading indicator until initial auth check is complete
     if (!authChecked) {
+        // ... (loading indicator remains the same) ...
         return <div style={{ textAlign: 'center', padding: '3rem', fontSize: '1.2em' }}>Checking authentication...</div>;
     }
 
+    // --- Corrected and Organized Routes ---
     return (
         <Router>
             <Routes>
+                {/* Login Route */}
                 <Route
                     path="/login"
                     element={
-                        // If user is already logged in, redirect from /login to /
                         currentUser ? <Navigate to="/" replace /> : <LoginPage onLoginSuccess={handleLoginSuccess} />
                     }
                 />
+
+                {/* Main Inventory Route */}
                 <Route
                     path="/"
                     element={
@@ -244,9 +252,41 @@ function AppRouter() {
                         </ProtectedRoute>
                     }
                 />
-                {/* Add other routes here if needed */}
-                {/* Example: Redirect any unknown path to the main page or login */}
-                 <Route path="*" element={<Navigate to={currentUser ? "/" : "/login"} replace />} />
+
+                {/* Analytics Route (Admin Only) */}
+                <Route
+                    path="/analytics"
+                    element={
+                        <ProtectedRoute user={currentUser}>
+                            {/* You could add role check here too, but ProtectedRoute handles basic auth */}
+                            {currentUser?.role === 'admin' ? <AnalyticsPage /> : <Navigate to="/" replace />}
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Bulk Update Route (Admin Only) */}
+                <Route
+                    path="/bulk-update"
+                    element={
+                        <ProtectedRoute user={currentUser}>
+                            {currentUser?.role === 'admin' ? <BulkUpdatePage /> : <Navigate to="/" replace />}
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Initial Import Route (Admin Only) */}
+                <Route
+                    path="/initial-import"
+                    element={
+                        <ProtectedRoute user={currentUser}>
+                            {currentUser?.role === 'admin' ? <InitialImportPage /> : <Navigate to="/" replace />}
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Catch-all Route */}
+                <Route path="*" element={<Navigate to={currentUser ? "/" : "/login"} replace />} />
+
             </Routes>
         </Router>
     );

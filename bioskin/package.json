@@ -11,11 +11,14 @@
     "@testing-library/user-event": "^13.5.0",
     "bcrypt": "^5.1.1",
     "better-sqlite3": "^11.9.1",
+    "chart.js": "^4.4.9",
     "react": "^19.1.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.5.3",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
