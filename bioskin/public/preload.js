@@ -7,32 +7,44 @@ console.log('Preload script executing...'); // Log for debugging
 contextBridge.exposeInMainWorld(
   'electronAPI',
   {
-    // Function renderer calls to get items
-    // Invokes the 'db:get-items' handler in main.js
+    // --- Existing IMS Functions ---
     getItems: () => {
       console.log('Preload: invoking db:get-items');
-      return ipcRenderer.invoke('db:get-items');
+      // IMPORTANT: Make sure the channel name 'db:get-items' matches what you use in main.js
+      // If you used 'get-items' in main.js, change it here too.
+      return ipcRenderer.invoke('db:get-items'); // Or 'get-items'
     },
-
-    // Function renderer calls to add an item
-    // Sends itemData and invokes 'db:add-item' handler
     addItem: (itemData) => {
       console.log('Preload: invoking db:add-item with', itemData);
-      return ipcRenderer.invoke('db:add-item', itemData);
+      // If you used 'add-item' in main.js, change it here too.
+      return ipcRenderer.invoke('db:add-item', itemData); // Or 'add-item'
     },
-
-    // Function renderer calls to update an item
-    // Sends itemData and invokes 'db:update-item' handler
     updateItem: (itemData) => {
       console.log(`Preload: invoking db:update-item for ID: ${itemData.id}`);
-      return ipcRenderer.invoke('db:update-item', itemData);
+      // If you used 'update-item' in main.js, change it here too.
+      return ipcRenderer.invoke('db:update-item', itemData); // Or 'update-item'
     },
-
-    // Function renderer calls to delete an item
-    // Sends itemId and invokes 'db:delete-item' handler
     deleteItem: (itemId) => {
       console.log(`Preload: invoking db:delete-item for ID: ${itemId}`);
-      return ipcRenderer.invoke('db:delete-item', itemId);
+      // If you used 'delete-item' in main.js, change it here too.
+      return ipcRenderer.invoke('db:delete-item', itemId); // Or 'delete-item'
+    }, // <-- Add comma here
+
+    // --- NEW Authentication Functions ---
+    login: (credentials) => {
+      console.log('Preload: invoking login with credentials');
+      // Uses the 'login' channel defined in main.js
+      return ipcRenderer.invoke('login', credentials);
+    },
+    logout: () => {
+      console.log('Preload: invoking logout');
+      // Uses the 'logout' channel defined in main.js
+      return ipcRenderer.invoke('logout');
+    },
+    getCurrentUser: () => {
+      console.log('Preload: invoking get-current-user');
+      // Uses the 'get-current-user' channel defined in main.js
+      return ipcRenderer.invoke('get-current-user');
     }
     // No comma needed after the last function
   }

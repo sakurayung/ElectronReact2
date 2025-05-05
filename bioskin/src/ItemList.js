@@ -1,7 +1,7 @@
 // src/ItemList.js
 import React from 'react';
 
-function ItemList({ items, onEdit, onDelete }) {
+function ItemList({ items, onEdit, onDelete, userRole }) {
 
   // Handle case where items might be null or undefined initially
   if (!items) {
@@ -79,12 +79,14 @@ function ItemList({ items, onEdit, onDelete }) {
                 Edit
               </button>
               {/* Delete Button */}
-              <button
-                className="button-delete" // Use class from your CSS
-                onClick={() => onDelete(item.id)} // Pass only the ID to the delete handler
-              >
-                Delete
-              </button>
+              {userRole === 'admin' && (
+                    <button
+                      className="button-delete" // Use class from your CSS
+                      onClick={() => onDelete(item.id)} // Pass only the ID to the delete handler
+                    >
+                      Delete
+                    </button>
+                )}
             </td>
           </tr>
         ))}

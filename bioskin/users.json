@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "password": "$2b$10$r7xCrohDAOBY/jDispEl9uCKGvchz8vPRmcArTzoe6NplNMeqD.ZS",
+    "role": "admin"
+  },
+  {
+    "id": 2,
+    "username": "employee1",
+    "password": "$2b$10$jpECYQAgFe6YhtzLLygiDOhhC5SzD7sw8C.cQHlkRzlq6pQvtioAO",
+    "role": "employee"
+  }
+]

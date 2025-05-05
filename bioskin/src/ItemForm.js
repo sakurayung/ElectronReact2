@@ -1,7 +1,7 @@
 // src/ItemForm.js
 import React, { useState, useEffect } from 'react';
 
-function ItemForm({ onSubmit, onCancelEdit, initialData }) {
+function ItemForm({ onSubmit, onCancelEdit, initialData, userRole }) {
   // State for form fields
   const [name, setName] = useState('');
   const [sku, setSku] = useState('');
@@ -9,6 +9,7 @@ function ItemForm({ onSubmit, onCancelEdit, initialData }) {
   const [costPrice, setCostPrice] = useState('0.00');
   const [quantity, setQuantity] = useState('0');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isCostPriceDisabled = isSubmitting || userRole !== 'admin';
 
   const isEditing = !!initialData; // Check if we are editing based on initialData
 
@@ -109,7 +110,8 @@ function ItemForm({ onSubmit, onCancelEdit, initialData }) {
             <input
               type="number" id="itemCostPrice" name="itemCostPrice" min="0" step="0.01"
               value={costPrice} onChange={(e) => setCostPrice(e.target.value)}
-              disabled={isSubmitting}
+              // disabled={isSubmitting} // Remove or comment out this line
+              disabled={isCostPriceDisabled} // <-- USE THE NEW VARIABLE
             />
           </div>
           <div className="form-group form-group-inline">

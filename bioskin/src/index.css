@@ -120,6 +120,7 @@ h3 {
 /* Input and Textarea Styling */
 input[type="text"],
 input[type="number"],
+input[type="password"], /* Add this line */
 textarea {
     display: block;
     width: 100%;

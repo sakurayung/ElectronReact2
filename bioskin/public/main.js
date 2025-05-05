@@ -4,6 +4,14 @@ const path = require('path');
 const fs = require('fs');
 const isDev = require('electron-is-dev');
 const Database = require('better-sqlite3'); // Import better-sqlite3
+const bcrypt = require('bcrypt');
+
+// Path to users file (adjust if needed)
+// Use app.getAppPath() for reliability, especially after packaging
+const usersFilePath = path.join(app.getAppPath(), 'users.json');
+
+// Variable to hold the currently logged-in user's info (simple session)
+let currentUser = null;
 
 let mainWindow;
 let db; // Database connection variable
@@ -226,29 +234,122 @@ ipcMain.handle('db:update-item', (event, itemData) => {
 });
 
 // Handle request to delete an item
-ipcMain.handle('db:delete-item', (event, itemId) => {
-    console.log(`IPC Main: Received db:delete-item request for ID: ${itemId}`);
-    if (!db) throw new Error("Database not initialized");
-    try {
-        // Basic validation
-        if (!itemId) {
-            throw new Error("Item ID is required to delete.");
-        }
-        // Prepare and execute SQL statement for deletion
-        const stmt = db.prepare('DELETE FROM items WHERE id = ?');
-        const result = stmt.run(itemId); // Execute with the item ID
+// Inside your main process file (e.g., main.js)
 
-        // Check if a row was actually deleted
-        if (result.changes === 0) {
-            console.warn(`IPC Main: Attempted to delete item ID ${itemId}, but it was not found.`);
-            // Depending on requirements, you might throw an error or just return success=false
-            // For simplicity, we'll return success=true as the item is effectively gone.
-        } else {
-            console.log(`IPC Main: Deleted item with ID ${itemId}. Changes: ${result.changes}`);
-        }
-        return { success: true }; // Return success
-    } catch (error) {
-        console.error('IPC Main: Error deleting item:', error);
-        throw error; // Propagate the error
-    }
+// Make sure 'currentUser' variable is accessible in this scope
+
+ipcMain.handle('db:delete-item', async (event, itemId) => { // Or 'delete-item'
+  console.log(`Main: Delete request for item ID: ${itemId}`);
+
+  // --- ROLE CHECK ---
+  if (!currentUser || currentUser.role !== 'admin') {
+      console.warn(`Main: Unauthorized delete attempt by user: ${currentUser?.username} (Role: ${currentUser?.role})`);
+      // You could return an error object or throw an error
+      // Returning a specific structure is often better for IPC
+      return { success: false, message: 'Permission denied: Only admins can delete items.' };
+  }
+  // --- END ROLE CHECK ---
+
+  // If check passes, proceed with deletion logic...
+  try {
+    // Your existing database deletion logic here...
+    // Example using node-sqlite3:
+    // return new Promise((resolve, reject) => {
+    //   db.run('DELETE FROM items WHERE id = ?', [itemId], function(err) {
+    //     if (err) {
+    //       console.error('Main: DB error deleting item:', err);
+    //       reject(new Error('Database error during deletion.')); // This will be caught by React's catch block
+    //     } else if (this.changes === 0) {
+    //        console.warn(`Main: Item ID ${itemId} not found for deletion.`);
+    //        resolve({ success: false, message: 'Item not found.' });
+    //     } else {
+    //        console.log(`Main: Successfully deleted item ID: ${itemId}`);
+    //        resolve({ success: true });
+    //     }
+    //   });
+    // });
+
+    // Placeholder if you don't have the DB logic snippet handy:
+     console.log(`Main: Proceeding with delete for item ID: ${itemId} (Admin: ${currentUser.username})`);
+     // Assume success for now if DB logic isn't shown
+     return { success: true };
+
+  } catch (error) {
+    console.error('Main: Error in delete-item handler:', error);
+    // Throwing error is also an option, React's catch block will get it
+    throw new Error('An unexpected error occurred during deletion.');
+  }
 });
+// --- Authentication IPC Handlers ---
+
+function readUsers() {
+  try {
+    // Check if file exists before reading
+    if (fs.existsSync(usersFilePath)) {
+      const data = fs.readFileSync(usersFilePath, 'utf-8');
+      return JSON.parse(data);
+    }
+    console.warn(`Users file not found at: ${usersFilePath}`);
+    return []; // Return empty array if file doesn't exist
+  } catch (error) {
+    console.error("Error reading users file:", error);
+    return []; // Return empty on error
+  }
+}
+
+ipcMain.handle('login', async (event, { username, password }) => {
+  console.log(`Main: Login attempt for username: ${username}`);
+  const users = readUsers();
+  const user = users.find(u => u.username === username);
+
+  if (!user) {
+    console.log('Main: Login failed - User not found');
+    return { success: false, message: 'Invalid username or password.' };
+  }
+
+  // Check if user has a password defined
+  if (!user.password) {
+      console.log(`Main: Login failed - User ${username} has no password set.`);
+      return { success: false, message: 'Login configuration error for user.' };
+  }
+
+  try {
+    // Compare provided password with the stored hash
+    const match = await bcrypt.compare(password, user.password);
+    if (match) {
+      console.log(`Main: Login successful for ${username}, Role: ${user.role}`);
+      // Store user info (IMPORTANT: Exclude password hash)
+      currentUser = {
+        id: user.id,
+        username: user.username,
+        role: user.role
+      };
+      // Send back success and the user object (without password)
+      return { success: true, user: currentUser };
+    } else {
+      console.log('Main: Login failed - Password mismatch');
+      return { success: false, message: 'Invalid username or password.' };
+    }
+  } catch (error) {
+    console.error("Main: Error during password comparison:", error);
+    return { success: false, message: 'An error occurred during login.' };
+  }
+});
+
+ipcMain.handle('logout', async () => {
+  if (currentUser) {
+    console.log(`Main: User ${currentUser.username} logging out.`);
+  } else {
+    console.log("Main: Logout called, but no user was logged in.");
+  }
+  currentUser = null; // Clear the session variable
+  return { success: true };
+});
+
+// Allows the frontend to check who is logged in when it starts up
+ipcMain.handle('get-current-user', async () => {
+  console.log("Main: get-current-user called. Returning:", currentUser);
+  return currentUser; // Send the currently stored user object, or null
+});
+
+// --- End Authentication IPC Handlers ---

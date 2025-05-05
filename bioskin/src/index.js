@@ -1,13 +1,12 @@
 // src/index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css'; // Import your main CSS file
-import App from './App'; // Import the main App component
+import './index.css'; // Your main CSS file
+import AppRouter from './App'; // Import the component exported from App.js (now named AppRouter)
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  // StrictMode helps catch potential problems in your components
   <React.StrictMode>
-    <App />
+    <AppRouter />
   </React.StrictMode>
 );
