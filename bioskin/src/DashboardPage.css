@@ -1,0 +1,243 @@
+/* src/DashboardPage.css */
+
+/* Page title styling */
+.dashboard-container h1 {
+  text-align: left !important;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-dark) !important;
+  border-bottom: none !important;
+  font-size: calc(var(--font-size-base) * 1.8); /* Match global H1 size */
+  font-weight: 600;
+}
+
+/* Top "Stat Cards" - now more like summary blocks */
+.stat-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: calc(var(--spacing-unit) * 5); /* Increased gap BETWEEN cards */
+  margin-bottom: calc(var(--spacing-unit) * 6); /* Increased space below cards */
+}
+
+.stat-card { /* This is a general card now, relies on .card from index.css */
+  /* display: flex; */
+  /* align-items: center; */
+  /* justify-content: space-between; */
+  /* padding: calc(var(--spacing-unit) * 4); */ /* from .card */
+}
+
+.stat-card .stat-content {
+  display: flex;
+  align-items: center;
+}
+
+.stat-card .stat-icon {
+  font-size: 2.5em; /* Adjust icon size if needed */
+  margin-right: calc(var(--spacing-unit) * 4);
+  padding: 0; /* Remove padding if using width/height */
+  border-radius: 50%;
+  color: var(--color-surface);
+  line-height: 1;
+
+  /* --- ADD/MODIFY THESE --- */
+  width: 70px; /* Explicit width - adjust size as needed */
+  height: 70px; /* Explicit height - must be same as width */
+  display: flex; /* Use flexbox to center content */
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+  /* --- END ADD/MODIFY --- */
+}
+
+/* Specific icon background colors */
+.stat-icon.total-products { background-color: var(--color-accent-secondary); } /* Muted Indigo */
+.stat-icon.todays-sales { background-color: var(--color-status-success); } /* Green */
+.stat-icon.in-low-stock { background-color: var(--color-status-danger); } /* Red */
+.stat-icon.new-orders { background-color: var(--color-status-warning); } /* Orange */
+
+
+.stat-card .stat-info p {
+  margin: 0 0 calc(var(--spacing-unit) * 0.5); /* 4px */
+  font-size: 0.95em;
+  color: var(--color-text-medium);
+  font-weight: 500;
+}
+.stat-card .stat-info span {
+  font-size: 1.8em; /* Data value size */
+  font-weight: 700;
+  color: var(--color-text-dark);
+  display: block;
+}
+
+/* Info cards grid for charts, etc. */
+.info-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: calc(var(--spacing-unit) * 4);
+}
+
+.info-card {
+  /* Uses .card from index.css */
+}
+
+.info-card h3 { /* Sub-section titles in info cards */
+  font-size: 1.15em; /* Match global H3 */
+  margin-top: 0;
+  margin-bottom: calc(var(--spacing-unit) * 3);
+  color: var(--color-text-dark) !important;
+  border-bottom: 1px solid var(--color-border-soft) !important;
+  padding-bottom: calc(var(--spacing-unit) * 1.5);
+  display: flex;
+  align-items: center;
+  font-weight: 600 !important;
+}
+.info-card h3 svg { /* Icons next to H3 titles */
+    margin-right: 8px;
+    color: var(--color-primary-dark); /* Or a specific accent */
+    font-size: 1.1em;
+}
+
+.info-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-card ul li {
+  padding: calc(var(--spacing-unit) * 1.25) 0; /* 10px */
+  font-size: 0.95em;
+  border-bottom: 1px dashed var(--color-border-soft);
+  color: var(--color-text-medium);
+}
+.info-card ul li:last-child {
+  border-bottom: none;
+}
+
+.info-card .no-data-message { /* Class for "No items found" etc. */
+  font-size: 0.95em;
+  color: var(--color-text-light);
+  padding: var(--spacing-unit) 0;
+}
+.info-card p strong { /* If using <p> with <strong> for key-value */
+    color: var(--color-text-dark);
+}
+
+/* For the activity log, if it's a separate component or styled div */
+.activity-log-panel {
+    border-left: 3px solid var(--color-accent-gold); /* As per image */
+    padding-left: calc(var(--spacing-unit) * 3);
+    min-height: 400px; /* Example height */
+}
+.activity-log-panel h3 {
+    /* Styles for "Activity Log" title */
+}
+
+/* Add to src/DashboardPage.css */
+
+.dashboard-layout {
+    display: flex;
+    /* Decrease gap between main content and activity log */
+    gap: calc(var(--spacing-unit) * 0.5); /* Was 6, now 4 (e.g., 20px) */
+}
+.dashboard-main-content {
+    flex: 3;
+    /* Remove padding override, let .page-container handle it */
+    /* padding: 0 !important;  <-- REMOVE THIS */
+}
+.dashboard-main-content > .page-container { /* If page-container is used inside */
+    padding: calc(var(--spacing-unit) * 4) !important;
+}
+
+
+.activity-log-panel {
+    flex: 1;
+    min-width: 300px;
+    max-width: 400px;
+    height: fit-content;
+    border-left: 4px solid var(--color-accent-gold) !important;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+    /* Ensure it uses card padding from index.css or add specific padding */
+    /* If .card padding in index.css is calc(var(--spacing-unit) * 4), it might be enough */
+    /* padding: calc(var(--spacing-unit) * 4); /* Ensure consistent padding */
+}
+
+.activity-log-panel h3 {
+    color: var(--color-text-dark);
+    font-weight: 600;
+    padding-bottom: calc(var(--spacing-unit) * 2); /* Increased padding */
+    border-bottom: 1px solid var(--color-border-soft);
+    margin-bottom: calc(var(--spacing-unit) * 3); /* Increased margin */
+}
+.activity-log-panel ul li {
+    font-size: 0.85em;
+    margin-bottom: calc(var(--spacing-unit) * 2); /* Increased margin */
+    padding-bottom: calc(var(--spacing-unit) * 2); /* Increased padding */
+    border-bottom: 1px dashed var(--color-border-soft);
+    line-height: 1.4;
+}
+.activity-log-panel ul li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.activity-log-panel .log-time {
+    color: var(--color-text-light);
+    display: block;
+    font-size: 0.9em;
+    margin-bottom: 2px;
+}
+.activity-log-panel .log-user {
+    font-weight: 500;
+    color: var(--color-text-medium);
+    margin-right: 4px;
+}
+.activity-log-panel .log-action {
+    color: var(--color-text-dark);
+}
+
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: calc(var(--spacing-unit) * 6); /* Increased space below header */
+    padding-bottom: calc(var(--spacing-unit) * 3);
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.dashboard-header .welcome-title {
+    font-size: 1.8em; /* Match global h1 */
+    color: var(--color-text-dark);
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    line-height: 1.2;
+    text-align: left !important;
+    border-bottom: none !important;
+}
+
+.dashboard-header .welcome-subtitle {
+    font-size: 1em;
+    color: var(--color-text-medium);
+    margin: 0;
+    font-weight: 500;
+}
+
+.top-bar-icons {
+    gap: calc(var(--spacing-unit) * 4); /* Increased gap for icons */
+}
+
+.top-bar-icons svg {
+    font-size: 1.5em; /* Icon size */
+    color: var(--color-text-medium);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.top-bar-icons svg:hover {
+    color: var(--color-text-dark);
+}
+
+.chart-container {
+    /* Relies on .card from index.css */
+    /* Add specific margin-top if needed, but grid gap should handle it */
+}
+.chart-container h3 {
+    /* Style for "Top Selling Products by Category" */
+     margin-bottom: calc(var(--spacing-unit) * 4); /* More space below title */
+}

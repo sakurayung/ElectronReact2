@@ -1,0 +1,19 @@
+/* src/Layout.css */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex-grow: 1;
+  /* Use your global --color-background instead of directly setting padding in body */
+  /* body in index.css already has padding, so we just need margin-left */
+  margin-left: 260px; /* Same as sidebar width from Sidebar.css */
+  /* background-color: var(--color-background, #f8f9fa); /* App's main background */
+  /* The body already has background-color set in index.css */
+  overflow-y: auto; /* Allow content to scroll if it exceeds viewport */
+  /* The padding from body in index.css will apply here if not overridden */
+}
+
+/* If you want page-specific containers to have padding, do it inside those pages */
+/* For example, a .page-container class with padding: var(--spacing-unit) * 3; */

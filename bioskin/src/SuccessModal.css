@@ -1,0 +1,56 @@
+/* src/SuccessModal.css */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Dim background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top */
+}
+
+.modal-content {
+  background-color: var(--color-surface);
+  padding: calc(var(--spacing-unit) * 6) calc(var(--spacing-unit) * 8); /* Generous padding */
+  border-radius: var(--border-radius);
+  border: 2px solid var(--color-accent-gold); /* Gold border */
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-icon {
+  font-size: 5em; /* Large icon */
+  margin-bottom: calc(var(--spacing-unit) * 3);
+}
+.modal-icon.success {
+  color: var(--color-status-success); /* Green check */
+}
+
+.modal-title {
+  font-size: 1.8em;
+  font-weight: 700;
+  color: var(--color-text-dark);
+  margin-top: 0;
+  margin-bottom: calc(var(--spacing-unit) * 1.5);
+  border-bottom: none; /* Remove border */
+}
+
+.modal-message {
+  font-size: 1em;
+  color: var(--color-text-medium);
+  margin-bottom: calc(var(--spacing-unit) * 4);
+}
+
+.modal-close-button {
+  /* Uses .button styles from index.css */
+  min-width: 100px;
+  /* You might want primary button colors */
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  color: var(--color-primary-light);
+}

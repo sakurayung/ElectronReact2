@@ -666,3 +666,30 @@
            return { success: false, errors: [error.message] };
        } // end of main catch for import-initial-items
    }); // end of ipcMain.handle for import-initial-items
+   ipcMain.handle('get-item-by-id', async (event, id) => {
+     console.log(`Main Process: Received request for item with ID: ${id}`); // Log request
+     if (!id) {
+         console.error('Main Process: getItemById called without an ID.');
+         return { success: false, message: 'No ID provided to getItemById' };
+         // Or just return null/undefined depending on how frontend handles it
+     }
+     try {
+       // Adjust SQL and table/column names ('items', 'id') as per your database schema
+       const stmt = db.prepare('SELECT * FROM items WHERE id = ?');
+       const item = stmt.get(id);
+
+       if (item) {
+         console.log('Main Process: Found item:', item);
+         // Important: better-sqlite3 returns the row directly. No need for { success: true, item: item }
+         // The frontend useEffect expects the item object directly if found.
+         return item;
+       } else {
+         console.log(`Main Process: Item with ID ${id} not found.`);
+         return null; // Return null if not found
+       }
+     } catch (error) {
+       console.error(`Main Process: Error fetching item by ID ${id}:`, error);
+       // Let the frontend handle the error thrown by the invoke promise
+       throw new Error(`Failed to retrieve item: ${error.message}`);
+     }
+   });

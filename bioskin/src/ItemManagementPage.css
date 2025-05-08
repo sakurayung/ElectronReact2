@@ -1,0 +1,104 @@
+/* src/ItemManagementPage.css */
+.item-management-page h1 {
+    font-size: 1.8em;
+    color: var(--color-text-dark);
+    font-weight: 700;
+    margin: 0;
+    text-align: left !important;
+    border-bottom: none !important;
+}
+
+.page-header-alt {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: calc(var(--spacing-unit) * 4);
+    padding-bottom: calc(var(--spacing-unit) * 3);
+    border-bottom: 1px solid var(--color-border-soft);
+}
+.top-bar-icons {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--spacing-unit) * 3);
+}
+.top-bar-icons svg {
+    font-size: 1.5em;
+    color: var(--color-text-medium);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.top-bar-icons svg:hover {
+    color: var(--color-text-dark);
+}
+
+/* NEW: Wrapper for the main bordered block */
+.content-block-wrapper {
+    /* Uses .card styles for background, shadow, border-radius */
+    border: 1px solid var(--color-accent-gold) !important; /* Use accent border */
+    padding: calc(var(--spacing-unit) * 4); /* Padding inside the border */
+}
+
+/* Filters section - adjusted */
+.filter-section-alt {
+    margin-bottom: calc(var(--spacing-unit) * 4); /* Space below filters */
+}
+
+.filters-bar {
+    display: flex;
+    gap: calc(var(--spacing-unit) * 3);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--border-radius);
+    padding: 0 calc(var(--spacing-unit) * 2);
+    background-color: var(--color-surface);
+    flex-grow: 1;
+    min-width: 250px;
+}
+/* ... search input styles remain the same ... */
+
+.filter-dropdown {
+    min-width: 200px;
+    padding: calc(var(--spacing-unit) * 1.75) calc(var(--spacing-unit) * 2.5);
+    border: 1px solid var(--color-border-strong); /* Ensure consistent border */
+    border-radius: var(--border-radius);
+    background-color: var(--color-surface);
+    /* Other select styles from index.css apply */
+}
+
+.stock-list-section {
+    /* No special styling needed now, just holds the table */
+}
+
+.table-container {
+    /* Styles from index.css apply */
+}
+
+/* Loading Placeholder Style */
+.loading-placeholder {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--color-text-light);
+    font-style: italic;
+}
+
+.page-actions-bar {
+    margin-top: calc(var(--spacing-unit) * 4);
+    display: flex;
+    gap: calc(var(--spacing-unit) * 2);
+    align-items: center; /* Vertically align items */
+}
+.page-actions-bar .button {
+   /* Uses global button styles */
+}
+.page-actions-bar .last-updated { /* Style for the 'Last Updated' text */
+    margin-left: auto; /* Pushes it to the right */
+    font-size: 0.8em;
+    color: var(--color-text-light);
+    font-style: italic;
+}

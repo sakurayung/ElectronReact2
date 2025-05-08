@@ -1,0 +1,162 @@
+/* src/ProductFormPage.css */
+.product-form-page h1 { /* "NEW/EDIT STOCK DETAILS" */
+    font-size: 1.6em; /* Slightly smaller than main page titles */
+    font-weight: 700;
+    margin: 0;
+    text-align: left !important;
+    border-bottom: none !important;
+    line-height: 1.3;
+}
+.product-form-page .form-subtitle {
+    font-size: 0.9em;
+    color: var(--color-text-medium);
+    margin: 5px 0 0 0;
+}
+
+.form-header-left {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--spacing-unit) * 3); /* 15px */
+}
+
+.back-button {
+    background: none;
+    border: none;
+    font-size: 1.8em; /* Larger icon */
+    color: var(--color-text-medium);
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+.back-button:hover {
+    color: var(--color-text-dark);
+}
+
+
+.product-form { /* The main form card */
+    border: 1px solid var(--color-border-soft) !important; /* Override potential gold border */
+    padding: calc(var(--spacing-unit) * 5); /* More padding */
+}
+
+.product-form .form-row {
+    /* Uses global styles */
+    gap: calc(var(--spacing-unit) * 4); /* Increase gap in rows */
+    margin-bottom: calc(var(--spacing-unit) * 4);
+}
+.product-form .form-row.three-cols {
+    /* Specific adjustments if needed for 3 columns */
+}
+
+/* Input field styling override for gold border */
+.product-form input[type="text"],
+.product-form input[type="number"],
+.product-form input[type="password"],
+.product-form select,
+.product-form textarea {
+    border-color: var(--color-accent-gold); /* Gold border */
+    background-color: #fff; /* Ensure white background */
+    padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 2.5); /* Adjust padding if needed */
+}
+.product-form input:focus,
+.product-form select:focus,
+.product-form textarea:focus {
+    border-color: var(--color-primary-dark);
+    box-shadow: 0 0 0 0.2rem var(--focus-ring-color);
+}
+
+/* Dropdown with icon */
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.input-with-icon .input-icon {
+    position: absolute;
+    left: calc(var(--spacing-unit) * 2.5); /* Position icon inside padding */
+    color: var(--color-text-light);
+    font-size: 0.9em;
+}
+.input-with-icon select {
+    padding-left: calc(var(--spacing-unit) * 6); /* Add padding to make space for icon */
+    width: 100%;
+    /* Ensure select arrow is still visible */
+    background-position: right calc(var(--spacing-unit) * 1.5) center;
+}
+
+
+/* Status Buttons */
+.status-buttons {
+    display: flex;
+    gap: calc(var(--spacing-unit) * 1.5); /* 7.5px */
+}
+.status-btn {
+    flex: 1;
+    padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2); /* ~12px 10px */
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--border-radius);
+    background-color: var(--color-surface);
+    color: var(--color-text-medium);
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9em;
+    text-align: center;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.status-btn:hover {
+    border-color: var(--color-text-medium);
+}
+.status-btn.high.active { background-color: var(--color-status-success); color: white; border-color: var(--color-status-success); }
+.status-btn.normal.active { background-color: var(--color-status-warning); color: white; border-color: var(--color-status-warning); }
+.status-btn.low.active { background-color: var(--color-status-danger); color: white; border-color: var(--color-status-danger); }
+
+
+.form-footer {
+    margin-top: calc(var(--spacing-unit) * 5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--color-border-soft);
+    padding-top: calc(var(--spacing-unit) * 4);
+}
+
+.confirm-checkbox {
+    display: flex;
+    align-items: center;
+}
+.confirm-checkbox input[type="checkbox"] {
+    width: auto; /* Override default block */
+    margin-right: calc(var(--spacing-unit) * 1.5);
+    accent-color: var(--color-primary-dark); /* Style checkbox color */
+    height: 18px; /* Adjust size */
+    width: 18px;
+}
+.confirm-checkbox label {
+    margin-bottom: 0; /* Remove bottom margin */
+    font-size: 0.9em;
+    color: var(--color-text-medium);
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.product-form .form-actions {
+    margin-top: 0; /* Remove margin from group */
+    justify-content: flex-end; /* Align button right if needed */
+}
+.save-button {
+    /* Uses global .button styles */
+    padding: calc(var(--spacing-unit) * 1.75) calc(var(--spacing-unit) * 4); /* Larger save button */
+}
+
+/* Error Message Styling */
+.error-message {
+    background-color: rgba(211, 47, 47, 0.1); /* Light red bg */
+    color: var(--color-status-danger);
+    border: 1px solid var(--color-status-danger);
+    padding: calc(var(--spacing-unit) * 2.5);
+    margin-bottom: calc(var(--spacing-unit) * 3);
+    border-radius: var(--border-radius);
+    font-size: 0.9em;
+}
