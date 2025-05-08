@@ -1,0 +1,192 @@
+/* src/LoginPage.css */
+
+/* Ensure body takes full height for the login page */
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family-sans, 'Inter', sans-serif); /* Fallback to Inter */
+}
+
+.login-page-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Prevent scrollbars if content slightly overflows */
+}
+
+/* Left Panel Styling */
+.login-left-panel {
+    flex: 1; /* Adjust flex ratio as needed, e.g., flex: 0 0 55%; */
+    background-image: url('./assets/background.jpg'); /* REPLACE THIS */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    color: white;
+    text-align: center;
+    position: relative; /* For pseudo-elements if needed for overlay */
+}
+
+/* Optional: Add a dark overlay to make text more readable if background is busy */
+.login-left-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3); /* Adjust opacity */
+    z-index: 1;
+}
+
+.login-branding {
+    position: relative; /* To ensure content is above the overlay */
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-logo {
+    width: 150px; /* Adjust as needed */
+    height: 150px; /* Adjust as needed */
+    border-radius: 50%; /* Make it circular like in the design */
+    border: 4px solid white; /* Optional: if your logo has a border */
+    margin-bottom: 25px;
+    object-fit: cover; /* If your logo isn't perfectly square */
+    background-color: #f0e68c; /* Placeholder background for logo if transparent */
+}
+
+.login-left-panel h1 {
+    font-size: 2.8em; /* Adjust as needed */
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: white; /* Override global h1 styles if necessary */
+    border-bottom: none; /* Override global h1 styles if necessary */
+    text-align: center; /* Override global h1 styles */
+}
+
+.login-left-panel p {
+    font-size: 1.1em; /* Adjust as needed */
+    color: #e0e0e0; /* Slightly off-white for subtitle */
+}
+
+
+/* Right Panel Styling */
+.login-right-panel {
+    flex: 1; /* Adjust flex ratio as needed, e.g., flex: 0 0 45%; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff; /* White background */
+    padding: 40px;
+}
+
+.login-form-container {
+    width: 100%;
+    max-width: 400px; /* Max width of the form itself */
+}
+
+.login-form-container h2 {
+    font-size: 2.2em; /* "LOGIN" title */
+    font-weight: bold;
+    color: #654321; /* Brown color - adjust to match design */
+    margin-bottom: 30px;
+    text-align: left; /* As per design */
+    border-bottom: none; /* Remove underlines from global h2 style if any */
+}
+
+.login-form-container .form-group {
+    margin-bottom: 20px;
+}
+
+.login-form-container .form-group label {
+    display: block;
+    font-size: 0.9em;
+    color: #555555; /* Dark grey for labels */
+    margin-bottom: 8px;
+    font-weight: normal; /* Override global label styles if any */
+}
+
+.login-form-container input[type="text"],
+.login-form-container input[type="password"] {
+    width: 100%;
+    padding: 15px; /* Ample padding */
+    border: 1px solid #8B4513; /* Dark brown border - adjust color */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #FFF8DC; /* Light beige - adjust color (cornsilk example) */
+    font-size: 1em;
+    color: #333;
+    box-sizing: border-box; /* Important for padding and border */
+}
+
+.login-form-container input[type="text"]:focus,
+.login-form-container input[type="password"]:focus {
+    border-color: #A0522D; /* Sienna - slightly different brown on focus */
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.2); /* Optional focus shadow */
+}
+
+.forgot-password-container {
+    text-align: right; /* Align "Forgot Password?" to the right */
+    margin-bottom: 25px;
+}
+
+.forgot-password-link {
+    font-size: 0.85em;
+    color: #555555;
+    text-decoration: none;
+}
+
+.forgot-password-link:hover {
+    text-decoration: underline;
+}
+
+.login-form-container .form-actions {
+    margin-top: 10px; /* Space above the button */
+}
+
+.button-login { /* Specific styling for the login button */
+    width: 100%;
+    padding: 15px;
+    background-color: #654321; /* Brown color - adjust to match design */
+    color: white;
+    border: none;
+    border-radius: 8px; /* Rounded corners */
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.button-login:hover {
+    background-color: #8B4513; /* Darker/different brown on hover */
+    filter: none; /* Override global button hover if it exists */
+}
+
+.button-login:disabled {
+    background-color: #A9A9A9; /* Grey out when disabled */
+    cursor: not-allowed;
+}
+
+.login-error-message {
+    color: var(--color-danger, #dc3545);
+    background-color: #f8d7da; /* Light red background for error */
+    border: 1px solid #f5c6cb; /* Reddish border */
+    padding: 10px;
+    border-radius: var(--border-radius, 0.3rem);
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+/* Ensure this doesn't conflict with global .container styles if they affect login page */
+.login-page-container .container {
+    max-width: none; /* Override if needed */
+    margin: 0;
+    padding: 0;
+}
