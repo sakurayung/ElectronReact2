@@ -162,10 +162,7 @@ function ProductFormPage({ currentUser }) {
                         </p>
                     </div>
                 </div>
-                <div className="top-bar-icons">
-                    <FaBell />
-                    <FaUserCircle />
-                </div>
+
             </header>
 
             {error && <div className="error-message card">{/* Style appropriately */}Error: {error}</div>}

@@ -7,7 +7,7 @@ import {
     FaTruckMoving, FaUsers, FaUserCircle, FaSignOutAlt,
     FaFileUpload, FaPenSquare, FaChartBar // Added more icons
 } from 'react-icons/fa';
-
+import appLogo from './assets/logo.png';
 function Sidebar({ onLogout, currentUser }) {
   const navigate = useNavigate();
   const location = useLocation(); // To highlight active link
@@ -27,7 +27,7 @@ function Sidebar({ onLogout, currentUser }) {
   // The 'adminOnly' flag will hide links from non-admin users
   const mainNavLinks = [
     { path: '/', label: 'Dashboard', icon: <FaTachometerAlt /> },
-    { path: '/products', label: 'Products', icon: <FaBoxOpen /> },
+    { path: '/products', label: 'Inventory', icon: <FaBoxOpen /> },
     // { path: '/categories', label: 'Categories', icon: <FaTags />, adminOnly: true }, // Example for future
     // { path: '/orders', label: 'Orders', icon: <FaShoppingCart /> }, // Example for future
     // { path: '/suppliers', label: 'Suppliers', icon: <FaTruckMoving />, adminOnly: true }, // Example for future
@@ -62,9 +62,10 @@ function Sidebar({ onLogout, currentUser }) {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-header">
-        <h3>Bioskin IMS</h3> {/* Or "Inventory MS" */}
-      </div>
+            <div className="sidebar-header">
+              <img src={"logo.png"} alt="Bioskin Logo" className="sidebar-logo" />
+              <h3>Bioskin IMS</h3>
+            </div>
       <nav className="sidebar-nav">
         <p className="nav-section-title">Main Menu</p>
         <ul>

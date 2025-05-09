@@ -1,19 +1,16 @@
-/* src/Layout.css */
 .app-layout {
   display: flex;
-  min-height: 100vh;
+  min-height: 100vh; /* Good, ensures full viewport height */
+  height: 100vh; /* Or explicitly 100vh if min-height isn't enough with flex children */
 }
 
-.main-content {
+.main-content { /* This contains the <Outlet /> where ItemManagementPage renders */
   flex-grow: 1;
-  /* Use your global --color-background instead of directly setting padding in body */
-  /* body in index.css already has padding, so we just need margin-left */
-  margin-left: 260px; /* Same as sidebar width from Sidebar.css */
-  /* background-color: var(--color-background, #f8f9fa); /* App's main background */
-  /* The body already has background-color set in index.css */
-  overflow-y: auto; /* Allow content to scroll if it exceeds viewport */
-  /* The padding from body in index.css will apply here if not overridden */
+  margin-left: 260px; /* Sidebar width */
+  overflow-y: auto; /* Allow main-content to scroll if its direct child is too tall AND NOT managing its own height */
+  /* FOR OUR CASE: We want ItemManagementPage to manage its internal scroll.
+     So, .main-content needs to give .page-container (child) a definite height context. */
+  display: flex; /* Make main-content a flex container */
+  flex-direction: column; /* Stack its children (like page-container) vertically */
+  /* min-height: 0; */ /* Sometimes needed for nested flex children */
 }
-
-/* If you want page-specific containers to have padding, do it inside those pages */
-/* For example, a .page-container class with padding: var(--spacing-unit) * 3; */

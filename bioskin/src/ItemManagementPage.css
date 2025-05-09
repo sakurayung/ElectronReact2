@@ -1,5 +1,24 @@
 /* src/ItemManagementPage.css */
-.item-management-page h1 {
+
+/* Main page structure */
+.item-management-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.item-management-page .page-header-alt {
+    flex-shrink: 0; /* Header doesn't shrink */
+    /* ... other header styles ... */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: calc(var(--spacing-unit) * 3);
+    padding-bottom: calc(var(--spacing-unit) * 3);
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.item-management-page .page-header-alt h1 {
     font-size: 1.8em;
     color: var(--color-text-dark);
     font-weight: 700;
@@ -8,97 +27,209 @@
     border-bottom: none !important;
 }
 
-.page-header-alt {
+/* Wrapper for the main content block with overall golden border */
+/* src/ItemManagementPage.css */
+
+/* Main page structure */
+.item-management-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Essential for child flex-grow to work as expected */
+}
+
+.item-management-page .page-header-alt {
+    flex-shrink: 0; /* Header doesn't shrink */
+    /* ... other header styles ... */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: calc(var(--spacing-unit) * 4);
+    margin-bottom: calc(var(--spacing-unit) * 3);
     padding-bottom: calc(var(--spacing-unit) * 3);
     border-bottom: 1px solid var(--color-border-soft);
 }
-.top-bar-icons {
-    display: flex;
-    align-items: center;
-    gap: calc(var(--spacing-unit) * 3);
-}
-.top-bar-icons svg {
-    font-size: 1.5em;
-    color: var(--color-text-medium);
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-.top-bar-icons svg:hover {
+
+.item-management-page .page-header-alt h1 {
+    font-size: 1.8em;
     color: var(--color-text-dark);
+    font-weight: 700;
+    margin: 0;
+    text-align: left !important;
+    border-bottom: none !important;
 }
 
-/* NEW: Wrapper for the main bordered block */
+/* Wrapper for the main content block */
 .content-block-wrapper {
-    /* Uses .card styles for background, shadow, border-radius */
-    border: 1px solid var(--color-accent-gold) !important; /* Use accent border */
-    padding: calc(var(--spacing-unit) * 4); /* Padding inside the border */
+    flex-grow: 1; /* Allows this block to fill available vertical space */
+    display: flex; /* Make it a flex container for its children */
+    flex-direction: column; /* Stack children (filters, table-section, actions-bar) vertically */
+    border: 1px solid var(--color-accent-gold) !important;
+    padding: calc(var(--spacing-unit) * 4);
+    background-color: var(--color-surface);
+    border-radius: var(--border-radius-rounded);
+    box-shadow: var(--box-shadow);
+    overflow: hidden; /* Important for containing children, especially if one is scrolling */
 }
 
-/* Filters section - adjusted */
+/* Filters Section */
 .filter-section-alt {
-    margin-bottom: calc(var(--spacing-unit) * 4); /* Space below filters */
+    flex-shrink: 0; /* Filters don't shrink */
+    margin-bottom: calc(var(--spacing-unit) * 4);
 }
 
 .filters-bar {
     display: flex;
-    gap: calc(var(--spacing-unit) * 3);
+    flex-direction: row;
     align-items: center;
+    gap: calc(var(--spacing-unit) * 3);
     flex-wrap: wrap;
 }
 
-.search-input-group {
+/* Common styles for ALL individual filter controls (Search, Category, Storage) */
+.search-input-group,
+.filter-dropdown-group,
+select.filter-dropdown.standalone-filter {
     display: flex;
     align-items: center;
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--border-radius);
-    padding: 0 calc(var(--spacing-unit) * 2);
+    border: 1px solid var(--color-accent-gold) !important;
+    border-radius: var(--border-radius-rounded);
     background-color: var(--color-surface);
+    height: 44px;
+    box-sizing: border-box;
+    padding: 0 calc(var(--spacing-unit) * 1.5);
+}
+
+/* Specifics for Search Input Group */
+.search-input-group {
+    flex-grow: 1; /* Allows search to take more space */
+    min-width: 280px;
+}
+
+.search-input-group .search-icon {
+    color: var(--color-text-medium);
+    font-size: 1em;
+    margin-right: calc(var(--spacing-unit) * 2); /* Space between search icon and input text */
+}
+
+.search-input-group input[type="text"] {
     flex-grow: 1;
-    min-width: 250px;
-}
-/* ... search input styles remain the same ... */
-
-.filter-dropdown {
-    min-width: 200px;
-    padding: calc(var(--spacing-unit) * 1.75) calc(var(--spacing-unit) * 2.5);
-    border: 1px solid var(--color-border-strong); /* Ensure consistent border */
-    border-radius: var(--border-radius);
-    background-color: var(--color-surface);
-    /* Other select styles from index.css apply */
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 0.9em;
+    color: var(--color-text-dark);
+    height: 100%; /* Fill height of the group */
+    padding: 0; /* Remove default padding if any, rely on group padding */
 }
 
+.search-input-group .filter-action-icon { /* Icon on the right of search (FaSlidersH) */
+    color: var(--color-text-medium);
+    font-size: 1em;
+    margin-left: calc(var(--spacing-unit) * 2); /* Space between input text and this icon */
+    cursor: pointer;
+}
+.search-input-group .filter-action-icon:hover {
+    color: var(--color-text-dark);
+}
+
+/* Specifics for Category Dropdown Group (Icon + Select) */
+.filter-dropdown-group {
+    min-width: 220px;
+    /* Padding is already on the common rule above */
+}
+
+.filter-dropdown-group .filter-icon { /* FaThLarge */
+    color: var(--color-text-medium);
+    font-size: 1em;
+    margin-right: calc(var(--spacing-unit) * 2); /* Space between icon and select text */
+    flex-shrink: 0;
+}
+
+.filter-dropdown-group select.filter-dropdown {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 0.9em;
+    color: var(--color-text-dark);
+    height: 100%; /* Fill height of group */
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%233E2F28' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right calc(var(--spacing-unit) * 1.5) center; /* Adjust arrow position */
+    background-size: 1em;
+    padding-left: 0; /* Text starts right after icon (group padding handles outer spacing) */
+    padding-right: calc(var(--spacing-unit) * 4); /* Space for the arrow */
+    line-height: normal; /* Helps with vertical text centering */
+    cursor: pointer;
+}
+
+/* Specifics for Standalone Storage Dropdown (Select only) */
+select.filter-dropdown.standalone-filter {
+    min-width: 220px;
+    /* Common styles (border, radius, bg, height, padding) are applied from the shared rule */
+    /* flex-grow: 1; /* Uncomment if it should also grow like search */
+    font-size: 0.9em;
+    color: var(--color-text-dark);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%233E2F28' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right calc(var(--spacing-unit) * 1.5) center; /* Adjust arrow position */
+    background-size: 1em;
+    padding-left: calc(var(--spacing-unit) * 1.5); /* Standard left padding for text */
+    padding-right: calc(var(--spacing-unit) * 4); /* Space for the arrow */
+    line-height: normal; /* Helps with vertical text centering */
+    cursor: pointer;
+}
+
+
+/* Stock List Section (Scrollable Area) */
 .stock-list-section {
-    /* No special styling needed now, just holds the table */
+    /* flex-grow: 1; */   /* OPTION 1: Temporarily comment this out if using max-height primarily */
+    max-height: 60vh;   /* OPTION 2: TRY THIS FIRST. Use a viewport height unit, or a fixed px value like 400px or 500px */
+                        /* Adjust this value (55vh) until the gap is reasonable or disappears. */
+                        /* This tells the section: "Don't grow taller than this, then scroll." */
+
+    overflow-y: auto;   /* Enables vertical scrollbar IF content overflows its allocated height */
+    min-height: 200px;  /* Reduced min-height, adjust if needed. Ensures it's visible. */
+
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--border-radius);
+    padding: 0; /* Ensure no internal padding is adding to the height before scrolling */
+
 }
 
-.table-container {
-    /* Styles from index.css apply */
+.stock-list-section .table-container {
+    width: 100%;
+    height: 100%; /* Make table container fill the .stock-list-section */
 }
 
-/* Loading Placeholder Style */
+#itemTable {
+    margin-bottom: 0 !important; /* Good to keep */
+}
+
+/* Loading Placeholder (inside .stock-list-section) */
 .loading-placeholder {
     text-align: center;
-    padding: 4rem 1rem;
+    padding: 2rem 1rem; /* Reduced padding if it was contributing to height */
     color: var(--color-text-light);
     font-style: italic;
+    /* Ensure it's displayed appropriately if .stock-list-section has a small height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px; /* Example, so placeholder text is visible */
 }
 
+/* Action Buttons Bar */
 .page-actions-bar {
-    margin-top: calc(var(--spacing-unit) * 4);
+    flex-shrink: 0;
+    margin-top: calc(var(--spacing-unit) * 2); /* This now primarily controls the gap */
     display: flex;
     gap: calc(var(--spacing-unit) * 2);
-    align-items: center; /* Vertically align items */
+    align-items: center;
 }
 .page-actions-bar .button {
-   /* Uses global button styles */
-}
-.page-actions-bar .last-updated { /* Style for the 'Last Updated' text */
-    margin-left: auto; /* Pushes it to the right */
-    font-size: 0.8em;
-    color: var(--color-text-light);
-    font-style: italic;
+   border-radius: var(--border-radius-rounded);
+   padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3.5);
+   font-weight: 500;
 }

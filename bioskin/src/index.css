@@ -9,40 +9,43 @@
     padding: 0;
 }
 
-/* Variables for easier theme management - NEW PALETTE */
+/* Variables for easier theme management - UPDATED PALETTE */
 :root {
+    /* ... your existing variables ... */
     --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --font-size-base: 16px;
     --line-height-base: 1.6;
 
-    /* New Bioskin Palette */
-    --color-primary-dark: #4A3B31;     /* Sidebar, primary buttons, strong text */
-    --color-primary-light: #F5F0E8;    /* Text on dark, button text */
-    --color-background-main: #FCF9F3;  /* Main page background */
-    --color-surface: #FFFFFF;          /* Card backgrounds, input backgrounds */
+    --color-primary-dark: #5C3221;
+    --color-primary-light: #F5F0E8;
+    --color-background-main: #FCF9F3;
+    --color-surface: #FFFFFF;
 
-    --color-text-dark: #3E2F28;        /* Main text color on light backgrounds */
-    --color-text-medium: #6D5F58;       /* Secondary text, labels */
-    --color-text-light: #A1887F;        /* Muted text, placeholders */
+    --color-text-dark: #3E2F28;
+    --color-text-medium: #6D5F58;
+    --color-text-light: #A1887F;
 
-    --color-border-strong: #A1887F;     /* Input borders, stronger dividers */
-    --color-border-soft: #EFEBE9;       /* Card borders, soft dividers */
+    --color-border-strong: #A1887F; /* Used for general input borders if not golden */
+    --color-border-soft: #EFEBE9;
 
-    --color-accent-gold: #B08D57;       /* A slightly richer gold for accents */
-    --color-accent-secondary: #7986CB;  /* Muted Indigo - for secondary buttons IF NEEDED or charts */
+    --color-accent-gold: #F7B900;
+    --color-accent-secondary: #7986CB;
 
-    --color-status-danger: #D32F2F;    /* Errors, low stock */
-    --color-status-danger-hover: #B71C1C;
-    --color-status-warning: #FFA000;   /* Moderate stock, warnings */
-    --color-status-success: #388E3C;   /* High stock, success */
+    --color-status-danger: #D32F2F;
+    --color-status-warning: #FFA000;
+    --color-status-success: #388E3C;
 
-    --color-table-header-bg: #F5F5F5; /* Light grey or very light beige */
-    --color-table-row-hover: #FDFBF5; /* Slightly off main background */
+    --color-table-header-bg: #F5F5F5;
+    --color-table-row-hover: #FDFBF5;
 
-    --border-radius: 0.3rem;
+    --color-link: #4A90E2; /* For links like "Edit Details" */
+    --color-link-hover: #357ABD; /* Darker blue for hover */
+
+    --border-radius: 0.3rem; /* Default border radius */
+    --border-radius-rounded: 8px; /* More rounded for specific elements like filters/buttons in target */
     --spacing-unit: 0.5rem;
     --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --focus-ring-color: rgba(74, 59, 49, 0.35); /* Primary dark with alpha */
+    --focus-ring-color: rgba(92, 50, 33, 0.35);
 }
 
 /* Body Defaults */
@@ -50,22 +53,23 @@ body {
     font-family: var(--font-family-sans);
     font-size: var(--font-size-base);
     line-height: var(--line-height-base);
-    color: var(--color-text-dark); /* Changed */
-    background-color: var(--color-background-main); /* Changed */
-    padding: 0; /* Remove global body padding, apply to main-content or page containers */
+    color: var(--color-text-dark);
+    background-color: var(--color-background-main);
+    padding: 0;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    /* Remove padding here if using .page-container inside */
-    /* padding: calc(var(--spacing-unit) * 4); */
 }
 
-/* Page Container - for individual pages to have consistent padding within main-content */
 .page-container {
-    /* Increased padding for more breathing room */
-    padding: calc(var(--spacing-unit) * 5); /* Approx 25px if unit is 0.5rem */
+    padding: calc(var(--spacing-unit) * 5); /* Your existing padding */
+    flex-grow: 1; /* Takes available space in .main-content */
+    display: flex; /* So its child (.item-management-page div) can use height:100% */
+    flex-direction: column; /* Stack .item-management-page vertically */
+    min-height: 0; /* Fix for flex items in some browsers if they overflow */
+    /* height: 100%; /* This might be redundant if flex-grow is working from main-content */
 }
 
 
@@ -74,38 +78,37 @@ h1, h2, h3 {
     margin-bottom: calc(var(--spacing-unit) * 2);
     line-height: 1.3;
     font-weight: 600;
-    color: var(--color-text-dark); /* Changed */
+    color: var(--color-text-dark);
 }
 
-h1 { /* For main application/page titles */
-    font-size: calc(var(--font-size-base) * 1.8); /* ~29px */
+h1 {
+    font-size: calc(var(--font-size-base) * 1.8);
     margin-bottom: calc(var(--spacing-unit) * 4);
-    /* text-align: center;  Let individual pages decide alignment */
-    color: var(--color-text-dark); /* Changed */
+    color: var(--color-text-dark);
 }
 
-h2 { /* For section titles within pages/cards */
-    font-size: calc(var(--font-size-base) * 1.4); /* ~22px */
-    border-bottom: 1px solid var(--color-border-soft); /* Changed */
+h2 {
+    font-size: calc(var(--font-size-base) * 1.4);
+    border-bottom: 1px solid var(--color-border-soft);
     padding-bottom: var(--spacing-unit);
     margin-bottom: calc(var(--spacing-unit) * 3);
 }
 
-h3 { /* For sub-titles within cards or sections */
-     font-size: calc(var(--font-size-base) * 1.15); /* ~18px */
-     font-weight: 600; /* Bolder than previous H3 */
-     color: var(--color-text-medium); /* Changed */
+h3 {
+     font-size: calc(var(--font-size-base) * 1.15);
+     font-weight: 600;
+     color: var(--color-text-medium);
      margin-bottom: calc(var(--spacing-unit) * 2.5);
 }
 
 /* Card Style for Grouping */
 .card {
-    background-color: var(--color-surface); /* Changed */
-    border: 1px solid var(--color-border-soft); /* Changed */
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border-soft);
     border-radius: var(--border-radius);
-    padding: calc(var(--spacing-unit) * 4); /* Increased padding */
+    padding: calc(var(--spacing-unit) * 4);
     box-shadow: var(--box-shadow);
-    margin-bottom: calc(var(--spacing-unit) * 4); /* Increased margin */
+    margin-bottom: calc(var(--spacing-unit) * 4);
 }
 
 /* Form Styling */
@@ -114,20 +117,20 @@ h3 { /* For sub-titles within cards or sections */
 }
 
 .form-group {
-    margin-bottom: calc(var(--spacing-unit) * 3); /* Increased */
+    margin-bottom: calc(var(--spacing-unit) * 3);
 }
 
 .form-group label {
     display: block;
     margin-bottom: var(--spacing-unit);
     font-weight: 500;
-    color: var(--color-text-medium); /* Changed */
+    color: var(--color-text-medium);
 }
 
 .form-row {
     display: flex;
     gap: calc(var(--spacing-unit) * 3);
-    margin-bottom: calc(var(--spacing-unit) * 3); /* Increased */
+    margin-bottom: calc(var(--spacing-unit) * 3);
 }
 
 .form-group-inline {
@@ -139,28 +142,28 @@ h3 { /* For sub-titles within cards or sections */
 input[type="text"],
 input[type="number"],
 input[type="password"],
-select, /* Add select here */
+select,
 textarea {
     display: block;
     width: 100%;
-    padding: calc(var(--spacing-unit) * 1.75) calc(var(--spacing-unit) * 2.5); /* Adjusted padding */
+    padding: calc(var(--spacing-unit) * 1.75) calc(var(--spacing-unit) * 2.5);
     font-size: var(--font-size-base);
     line-height: var(--line-height-base);
-    color: var(--color-text-dark); /* Changed */
-    background-color: var(--color-surface); /* Changed */
+    color: var(--color-text-dark);
+    background-color: var(--color-surface);
     background-clip: padding-box;
-    border: 1px solid var(--color-border-strong); /* Changed */
+    border: 1px solid var(--color-border-strong);
     border-radius: var(--border-radius);
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
-/* Specific style for select, already good in BulkUpdatePage, but good to have base */
+
 select {
-    appearance: none; /* Remove default arrow on some browsers */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%233E2F28' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%233E2F28' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E"); /* Consider updating arrow color if needed */
     background-repeat: no-repeat;
     background-position: right calc(var(--spacing-unit) * 2) center;
     background-size: 1em;
-    padding-right: calc(var(--spacing-unit) * 6); /* Make space for arrow */
+    padding-right: calc(var(--spacing-unit) * 6);
 }
 
 
@@ -173,25 +176,25 @@ textarea {
 }
 
 input:focus,
-select:focus, /* Add select */
+select:focus,
 textarea:focus {
-    border-color: var(--color-primary-dark); /* Changed */
+    border-color: var(--color-primary-dark); /* Will use new #5C3221 */
     outline: 0;
-    box-shadow: 0 0 0 0.2rem var(--focus-ring-color); /* Changed */
+    box-shadow: 0 0 0 0.2rem var(--focus-ring-color); /* Will use new focus ring color */
 }
 
 /* Button Styling */
 .button {
     display: inline-block;
     font-weight: 500;
-    color: var(--color-primary-light); /* Default text for primary */
+    color: var(--color-primary-light);
     text-align: center;
     vertical-align: middle;
     cursor: pointer;
     user-select: none;
-    background-color: var(--color-primary-dark); /* Default to primary button style */
-    border: 1px solid var(--color-primary-dark); /* Border matches bg */
-    padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 3); /* Adjusted */
+    background-color: var(--color-primary-dark); /* Will use new #5C3221 */
+    border: 1px solid var(--color-primary-dark); /* Will use new #5C3221 */
+    padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 3);
     font-size: var(--font-size-base);
     line-height: var(--line-height-base);
     border-radius: var(--border-radius);
@@ -199,12 +202,12 @@ textarea:focus {
 }
 
 .button:hover {
-    opacity: 0.85; /* General hover effect */
+    opacity: 0.85;
 }
 
 .button:focus {
     outline: 0;
-    box-shadow: 0 0 0 0.2rem var(--focus-ring-color); /* Changed */
+    box-shadow: 0 0 0 0.2rem var(--focus-ring-color);
 }
 
 .button:active {
@@ -212,27 +215,25 @@ textarea:focus {
 }
 
 .button:disabled {
-    background-color: var(--color-text-light) !important; /* More muted disabled */
+    background-color: var(--color-text-light) !important;
     border-color: var(--color-text-light) !important;
     color: var(--color-surface) !important;
     opacity: 0.65;
     cursor: not-allowed;
 }
 
-/* Primary Button (is now the default .button style) */
 .button-primary {
     /* This class can be used if you need to distinguish, but .button is now primary */
 }
 
-/* Secondary Button */
 .button-secondary {
-    color: var(--color-primary-dark); /* Dark text */
-    background-color: transparent; /* Transparent background */
-    border-color: var(--color-primary-dark); /* Dark border */
+    color: var(--color-primary-dark); /* Will use new #5C3221 */
+    background-color: transparent;
+    border-color: var(--color-primary-dark); /* Will use new #5C3221 */
 }
 .button-secondary:hover {
-     background-color: rgba(74, 59, 49, 0.05); /* Very subtle dark bg on hover */
-     opacity: 1; /* Override general opacity hover */
+     background-color: rgba(92, 50, 33, 0.05); /* UPDATED - Based on new primary-dark #5C3221 */
+     opacity: 1;
 }
 
 /* Table Actions Button - for Edit/Delete in tables */
@@ -244,12 +245,12 @@ textarea:focus {
 }
 .button-edit {
     background-color: transparent;
-    border: 1px solid var(--color-accent-gold);
-    color: var(--color-accent-gold);
+    border: 1px solid var(--color-accent-gold); /* Will use new #F7B900 */
+    color: var(--color-accent-gold); /* Will use new #F7B900 */
 }
 .button-edit:hover {
-    background-color: var(--color-accent-gold);
-    color: var(--color-primary-light);
+    background-color: var(--color-accent-gold); /* Will use new #F7B900 */
+    color: var(--color-primary-light); /* Text color on accent gold background */
     opacity: 1;
 }
 
@@ -263,11 +264,31 @@ textarea:focus {
     color: var(--color-primary-light);
     opacity: 1;
 }
+.button-link-style {
+    background: none !important;
+    border: none !important;
+    color: var(--color-link) !important;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0 !important;
+    font-size: inherit !important; /* Inherit font size from table cell */
+    font-weight: normal !important; /* Normal weight, not bold */
+    display: inline; /* Act like a link */
+}
+.button-link-style:hover {
+    color: var(--color-link-hover) !important;
+    text-decoration: none;
+}
+
+/* Ensure general button styles don't override the link style too much if applied to a button tag */
+#itemTable .button-link-style { /* More specific to ensure it applies in table */
+    margin-right: 0; /* Remove any margin from button-edit/delete if class was swapped */
+}
 
 
 /* Button Actions Groups */
 .form-actions {
-    margin-top: calc(var(--spacing-unit) * 4); /* Increased */
+    margin-top: calc(var(--spacing-unit) * 4);
     display: flex;
     gap: calc(var(--spacing-unit) * 2);
 }
@@ -275,7 +296,7 @@ textarea:focus {
 /* Divider */
 hr.section-divider {
     border: none;
-    border-top: 1px solid var(--color-border-soft); /* Changed */
+    border-top: 1px solid var(--color-border-soft);
     margin: calc(var(--spacing-unit) * 5) 0;
 }
 
@@ -287,34 +308,34 @@ hr.section-divider {
 #itemTable {
     width: 100%;
     margin-bottom: calc(var(--spacing-unit) * 2);
-    color: var(--color-text-dark); /* Changed */
+    color: var(--color-text-dark);
     border-collapse: collapse;
     border-spacing: 0;
 }
 
 #itemTable th,
 #itemTable td {
-    padding: calc(var(--spacing-unit) * 2); /* ~16px, adjusted */
-    vertical-align: middle; /* Align content vertically */
-    border-top: 1px solid var(--color-border-soft); /* Changed */
-    border-bottom: 1px solid var(--color-border-soft); /* Changed */
+    padding: calc(var(--spacing-unit) * 2);
+    vertical-align: middle;
+    border-top: 1px solid var(--color-border-soft);
+    border-bottom: 1px solid var(--color-border-soft);
     border-left: none;
     border-right: none;
-    text-align: left; /* Default left align for table cells */
+    text-align: left;
 }
 
 #itemTable thead th {
     vertical-align: bottom;
-    border-bottom: 2px solid var(--color-border-strong); /* Changed for stronger header line */
+    border-bottom: 2px solid var(--color-border-strong);
     border-top: none;
-    background-color: var(--color-table-header-bg); /* Changed */
+    background-color: var(--color-table-header-bg);
     font-weight: 600;
-    color: var(--color-text-medium); /* Changed */
+    color: var(--color-text-medium);
     white-space: nowrap;
 }
 
 #itemTable tbody tr:hover {
-    background-color: var(--color-table-row-hover); /* Changed */
+    background-color: var(--color-table-row-hover);
 }
 
 /* Status text colors for table (High, Low, Moderate) */

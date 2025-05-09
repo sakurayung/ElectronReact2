@@ -1,10 +1,10 @@
 // src/LoginPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './LoginPage.css'; // We'll create this new CSS file
+import './LoginPage.css';
 
-// Placeholder for your logo - replace with your actual logo path
-import logoPlaceholder from './assets/logo.png'; // Create an assets folder in src if you don't have one
+// Assuming your logo is named logo.png in the assets folder
+import bioskinLogo from './assets/logo.png';
 
 function LoginPage({ onLoginSuccess }) {
   const [username, setUsername] = useState('');
@@ -44,9 +44,8 @@ function LoginPage({ onLoginSuccess }) {
       {/* Left Panel */}
       <div className="login-left-panel">
         <div className="login-branding">
-          <img src={logoPlaceholder} alt="Bioskin Logo" className="login-logo" />
+          <img src={bioskinLogo} alt="Bioskin Logo" className="login-logo" />
           <h1>BIOSKIN INVENTORY</h1>
-
         </div>
       </div>
 
@@ -66,7 +65,6 @@ function LoginPage({ onLoginSuccess }) {
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={isLoading}
                 required
-                placeholder="" // The design doesn't show placeholders inside inputs
               />
             </div>
 
@@ -79,11 +77,8 @@ function LoginPage({ onLoginSuccess }) {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 required
-                placeholder=""
               />
             </div>
-
-
 
             <div className="form-actions">
               <button type="submit" className="button button-login" disabled={isLoading}>

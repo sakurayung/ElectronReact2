@@ -15,15 +15,30 @@
 }
 
 .sidebar-header {
-  padding: 25px 20px; /* Increased padding */
+  padding: 25px 20px;
   text-align: center;
-  border-bottom: 1px solid rgba(245, 240, 232, 0.1); /* Lighter border using primary-light with alpha */
+  border-bottom: 1px solid rgba(245, 240, 232, 0.1);
+  /* Add flexbox to center logo and title vertically */
+  display: flex;
+  flex-direction: column; /* Stack logo above title */
+  align-items: center;
+}
+
+/* ADD OR MODIFY THIS RULE FOR THE LOGO */
+.sidebar-logo {
+  width: 70px; /* Adjust size to match screenshot */
+  height: 70px; /* Adjust size to match screenshot */
+  border-radius: 50%; /* Make it circular */
+  object-fit: cover; /* Adjust if logo aspect ratio isn't square */
+  margin-bottom: 15px; /* Space between logo and title */
+  /* Optional: Add a subtle border if needed */
+  /* border: 1px solid rgba(245, 240, 232, 0.2); */
 }
 
 .sidebar-header h3 {
-  margin: 0;
-  color: var(--color-primary-light); /* Changed */
-  font-size: 1.7em; /* Slightly larger */
+  margin: 0; /* Remove default margins */
+  color: var(--color-primary-light);
+  font-size: 1.7em; /* Adjust as needed */
   font-weight: 600;
 }
 

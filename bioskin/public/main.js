@@ -1,5 +1,5 @@
 // public/main.js
-   const { app, BrowserWindow, ipcMain } = require('electron');
+   const { app, BrowserWindow, ipcMain, Menu, nativeImage } = require('electron');
    const path = require('path');
    const fs = require('fs');
    const isDev = require('electron-is-dev');
@@ -87,28 +87,41 @@
 
    // --- Electron App Lifecycle ---
    function createWindow() {
+       // ---> SECTION TO SET UP THE ICON <---
+       const iconPath = path.join(__dirname, 'logo.png'); // Path to your icon in the 'public' folder
+       let windowIcon = null;
+
+       if (fs.existsSync(iconPath)) {
+           windowIcon = nativeImage.createFromPath(iconPath);
+           console.log(`Window icon loaded from: ${iconPath}`);
+       } else {
+           console.warn(`Window icon NOT FOUND at: ${iconPath}. Using default Electron icon.`);
+       }
+       // ---> END OF ICON SETUP SECTION <---
+
        mainWindow = new BrowserWindow({
-           width: 1000, // Adjust size as needed
-           height: 750,
+           width: 1200,
+           height: 800,
+           title: "Bioskin Inventory Management System",
+           icon: windowIcon,
            webPreferences: {
-               // Preload script is the bridge to the renderer process
-               preload: path.join(__dirname, 'preload.js'),
-               // Security best practices:
-               contextIsolation: true, // Keep renderer and preload scripts separate
-               nodeIntegration: false, // Prevent Node.js access in renderer
+               preload: path.join(__dirname, 'preload.js'), // Assumes preload.js is in public/
+               contextIsolation: true,
+               nodeIntegration: false,
            },
        });
 
-       // Load the React application
-       // In development, load from the CRA dev server
-       // In production, load the built index.html file
-       mainWindow.loadURL(
-           isDev
-               ? 'http://localhost:3000' // URL of the React dev server
-               : `file://${path.join(__dirname, '../build/index.html')}` // Path to the production build
-       );
+       Menu.setApplicationMenu(null);
 
-       // Open DevTools automatically in development
+       const startUrl = isDev
+           ? 'http://localhost:3000'
+           : `file://${path.join(__dirname, '../build/index.html')}`; // For production
+       mainWindow.loadURL(startUrl);
+
+       mainWindow.webContents.on('did-finish-load', () => {
+           // mainWindow.setTitle('Bioskin Inventory Management System');
+       });
+
        if (isDev) {
            mainWindow.webContents.openDevTools({ mode: 'detach' });
        }
