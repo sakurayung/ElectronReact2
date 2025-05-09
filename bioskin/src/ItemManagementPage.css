@@ -78,16 +78,24 @@
 
 .filters-bar {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: calc(var(--spacing-unit) * 3);
-    flex-wrap: wrap;
+    flex-direction: column; /* STACK the rows of filters */
+    align-items: stretch;  /* Make children (like .filter-row and the standalone select) take full width */
+    gap: calc(var(--spacing-unit) * 3); /* Gap BETWEEN the rows */
 }
 
-/* Common styles for ALL individual filter controls (Search, Category, Storage) */
-.search-input-group,
-.filter-dropdown-group,
-select.filter-dropdown.standalone-filter {
+.filter-row {
+    display: flex;
+    flex-direction: row; /* Items within this row are horizontal */
+    align-items: center;
+    gap: calc(var(--spacing-unit) * 3); /* Gap BETWEEN search and category */
+    width: 100%; /* Make the row itself take full width */
+}
+
+/* Styles for individual filter controls (search, category group) - mostly same as before */
+.search-input-group {
+    flex-grow: 1; /* Search input takes more space within its row */
+    min-width: 280px;
+    /* ... (other .search-input-group styles: border, radius, height, etc. from previous response) ... */
     display: flex;
     align-items: center;
     border: 1px solid var(--color-accent-gold) !important;
@@ -97,90 +105,76 @@ select.filter-dropdown.standalone-filter {
     box-sizing: border-box;
     padding: 0 calc(var(--spacing-unit) * 1.5);
 }
-
-/* Specifics for Search Input Group */
-.search-input-group {
-    flex-grow: 1; /* Allows search to take more space */
-    min-width: 280px;
-}
-
+/* ... (Styles for .search-icon, input[type="text"], .filter-action-icon) ... */
 .search-input-group .search-icon {
     color: var(--color-text-medium);
     font-size: 1em;
-    margin-right: calc(var(--spacing-unit) * 2); /* Space between search icon and input text */
+    margin-right: calc(var(--spacing-unit) * 2);
 }
-
 .search-input-group input[type="text"] {
     flex-grow: 1;
-    border: none;
-    outline: none;
-    background-color: transparent;
-    font-size: 0.9em;
-    color: var(--color-text-dark);
-    height: 100%; /* Fill height of the group */
-    padding: 0; /* Remove default padding if any, rely on group padding */
+    border: none; outline: none; background-color: transparent;
+    font-size: 0.9em; color: var(--color-text-dark); height: 100%; padding: 0;
 }
+.search-input-group .filter-action-icon {
+    color: var(--color-text-medium); font-size: 1em;
+    margin-left: calc(var(--spacing-unit) * 2); cursor: pointer;
+}
+.search-input-group .filter-action-icon:hover { color: var(--color-text-dark); }
 
-.search-input-group .filter-action-icon { /* Icon on the right of search (FaSlidersH) */
-    color: var(--color-text-medium);
-    font-size: 1em;
-    margin-left: calc(var(--spacing-unit) * 2); /* Space between input text and this icon */
-    cursor: pointer;
-}
-.search-input-group .filter-action-icon:hover {
-    color: var(--color-text-dark);
-}
 
-/* Specifics for Category Dropdown Group (Icon + Select) */
-.filter-dropdown-group {
-    min-width: 220px;
-    /* Padding is already on the common rule above */
+.filter-dropdown-group { /* For category dropdown with icon */
+    min-width: 220px; /* Or adjust flex properties if needed */
+    /* ... (other .filter-dropdown-group styles: border, radius, height, etc. from previous response) ... */
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--color-accent-gold) !important;
+    border-radius: var(--border-radius-rounded);
+    background-color: var(--color-surface);
+    height: 44px;
+    box-sizing: border-box;
+    padding: 0 calc(var(--spacing-unit) * 1.5);
 }
-
-.filter-dropdown-group .filter-icon { /* FaThLarge */
-    color: var(--color-text-medium);
-    font-size: 1em;
-    margin-right: calc(var(--spacing-unit) * 2); /* Space between icon and select text */
-    flex-shrink: 0;
+/* ... (Styles for .filter-icon, select.filter-dropdown within the group) ... */
+.filter-dropdown-group .filter-icon {
+    color: var(--color-text-medium); font-size: 1em;
+    margin-right: calc(var(--spacing-unit) * 2); flex-shrink: 0;
 }
-
 .filter-dropdown-group select.filter-dropdown {
-    flex-grow: 1;
-    border: none;
-    outline: none;
-    background-color: transparent;
-    font-size: 0.9em;
-    color: var(--color-text-dark);
-    height: 100%; /* Fill height of group */
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%233E2F28' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right calc(var(--spacing-unit) * 1.5) center; /* Adjust arrow position */
-    background-size: 1em;
-    padding-left: 0; /* Text starts right after icon (group padding handles outer spacing) */
-    padding-right: calc(var(--spacing-unit) * 4); /* Space for the arrow */
-    line-height: normal; /* Helps with vertical text centering */
-    cursor: pointer;
+    flex-grow: 1; border: none; outline: none; background-color: transparent;
+    font-size: 0.9em; color: var(--color-text-dark); height: 100%;
+    appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%233E2F28' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right calc(var(--spacing-unit) * 1.5) center;
+    background-size: 1em; padding-left: 0; padding-right: calc(var(--spacing-unit) * 4);
+    line-height: normal; cursor: pointer;
 }
 
-/* Specifics for Standalone Storage Dropdown (Select only) */
-select.filter-dropdown.standalone-filter {
-    min-width: 220px;
-    /* Common styles (border, radius, bg, height, padding) are applied from the shared rule */
-    /* flex-grow: 1; /* Uncomment if it should also grow like search */
+
+/* Styles for the standalone Storage dropdown to make it full width on its row */
+select.filter-dropdown.standalone-filter.storage-filter-full-width {
+    width: 100%; /* Make it take full width of its parent (.filters-bar) */
+    min-width: 100%; /* Ensure it stretches */
+    /* ... (other .standalone-filter styles: border, radius, height, text styles, arrow etc. from previous response) ... */
+    /* These are inherited if the base standalone-filter class is kept, or repeat them: */
+    display: flex; /* Though not strictly needed for select, good for consistency if it were a group */
+    align-items: center;
+    border: 1px solid var(--color-accent-gold) !important;
+    border-radius: var(--border-radius-rounded);
+    background-color: var(--color-surface);
+    height: 44px;
+    box-sizing: border-box;
     font-size: 0.9em;
     color: var(--color-text-dark);
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%233E2F28' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right calc(var(--spacing-unit) * 1.5) center; /* Adjust arrow position */
+    background-position: right calc(var(--spacing-unit) * 1.5) center;
     background-size: 1em;
     padding-left: calc(var(--spacing-unit) * 1.5); /* Standard left padding for text */
     padding-right: calc(var(--spacing-unit) * 4); /* Space for the arrow */
-    line-height: normal; /* Helps with vertical text centering */
+    line-height: normal;
     cursor: pointer;
 }
-
 
 /* Stock List Section (Scrollable Area) */
 .stock-list-section {

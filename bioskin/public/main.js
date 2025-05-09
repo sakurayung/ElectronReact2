@@ -41,39 +41,77 @@
        }
    }
 
-   // --- Create Database Schema ---
    function initializeSchema() {
        console.log("Initializing database schema...");
-       // SQL statement to create the 'items' table if it doesn't exist
-       // Matches the fields used in your React components
-       const schemaSql = `
-           CREATE TABLE IF NOT EXISTS items (
-               id INTEGER PRIMARY KEY AUTOINCREMENT, -- Auto-incrementing integer ID
-               name TEXT NOT NULL,                   -- Item name (required)
-               sku TEXT UNIQUE,                      -- Stock Keeping Unit (optional, but unique if provided)
-               description TEXT,                     -- Item description (optional)
-               cost_price REAL DEFAULT 0.0,          -- Cost price (decimal number)
-               quantity INTEGER DEFAULT 0,           -- Stock quantity (integer)
-               created_at TEXT DEFAULT CURRENT_TIMESTAMP, -- Timestamp when created
-               updated_at TEXT DEFAULT CURRENT_TIMESTAMP  -- Timestamp when last updated
-           );
 
-           -- Trigger to automatically update the 'updated_at' timestamp on any row update
-           DROP TRIGGER IF EXISTS update_item_timestamp; -- Remove old trigger if exists
-           CREATE TRIGGER IF NOT EXISTS update_item_timestamp
+       // SQL statement to create the 'items' table if it doesn't exist
+       const itemsTableSql = `
+           CREATE TABLE IF NOT EXISTS items (
+               id INTEGER PRIMARY KEY AUTOINCREMENT,
+               name TEXT NOT NULL,
+               sku TEXT UNIQUE,
+               description TEXT,
+               cost_price REAL DEFAULT 0.0,
+               quantity INTEGER DEFAULT 0,
+               category TEXT,                      -- NEW: For product category
+               storage_location TEXT,              -- NEW: For storage location
+               variant TEXT,                       -- NEW: For product variant (e.g., size, color)
+               status TEXT,                        -- NEW: For stock status (e.g., 'High', 'Normal', 'Low')
+               created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- Changed to DATETIME for clarity
+               updated_at DATETIME DEFAULT CURRENT_TIMESTAMP  -- Changed to DATETIME for clarity
+           );
+       `;
+
+       // Trigger to automatically update the 'updated_at' timestamp on any row update
+       // No need to drop and recreate if using "IF NOT EXISTS" for the trigger itself.
+       const updateTimestampTriggerSql = `
+           CREATE TRIGGER IF NOT EXISTS update_items_updated_at_trigger -- Renamed for clarity
            AFTER UPDATE ON items
            FOR EACH ROW
+           WHEN OLD.updated_at = NEW.updated_at OR OLD.updated_at IS NULL -- Only update if not already set by the UPDATE statement
            BEGIN
                UPDATE items SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
            END;
        `;
+       // Note: A more common pattern for updated_at is to set it directly in your UPDATE SQL.
+       // The trigger is a fallback or can be used if you want it to always reflect DB write time.
+       // If you manually set updated_at in your 'update-item' IPC handler, this trigger might be redundant
+       // or you might adjust its WHEN clause. For now, this is a common setup.
+
        try {
-           // Execute the SQL to create table and trigger
-           db.exec(schemaSql);
-           console.log("Database schema checked/initialized successfully.");
+           db.exec(itemsTableSql);
+           console.log("Items table schema checked/initialized successfully.");
+
+           db.exec(updateTimestampTriggerSql);
+           console.log("Update timestamp trigger checked/initialized successfully.");
+
+           // --- Handle adding new columns to an EXISTING table if needed ---
+           // This is more for development. In production, you'd use proper migration scripts.
+           // Check if columns exist and add them if they don't.
+           const columnsToAdd = [
+               { name: 'category', type: 'TEXT' },
+               { name: 'storage_location', type: 'TEXT' },
+               { name: 'variant', type: 'TEXT' },
+               { name: 'status', type: 'TEXT' }
+           ];
+
+           const tableInfo = db.prepare(`PRAGMA table_info(items);`).all();
+           const existingColumns = tableInfo.map(col => col.name);
+
+           for (const column of columnsToAdd) {
+               if (!existingColumns.includes(column.name)) {
+                   try {
+                       db.exec(`ALTER TABLE items ADD COLUMN ${column.name} ${column.type};`);
+                       console.log(`Successfully added column: ${column.name} to items table.`);
+                   } catch (alterError) {
+                       console.error(`Error adding column ${column.name}:`, alterError.message);
+                   }
+               }
+           }
+           // --- End of ALTER TABLE logic ---
+
        } catch (err) {
            console.error("Error initializing schema:", err.message);
-           // Handle schema errors (e.g., migration issues in future)
        }
    }
 
@@ -148,20 +186,80 @@
    // --- IPC Handlers (Backend Logic for Frontend Requests) ---
 
    // Handle request to get all items
-   ipcMain.handle('db:get-items', () => {
-       console.log('IPC Main: Received db:get-items request');
-       if (!db) throw new Error("Database not initialized");
+   ipcMain.handle('db:get-items', (event, filters = {}) => {
+       console.log('[IPC Main]: Received db:get-items request with filters:', JSON.stringify(filters, null, 2)); // Enhanced log
+       if (!db) {
+           console.error("[IPC Main] db:get-items: Database not initialized!");
+           throw new Error("Database not initialized");
+       }
+
+       let sql = `SELECT id, name, sku, description, cost_price, quantity, category, storage_location, variant, status, created_at, updated_at
+                  FROM items`;
+       const queryParams = {}; // Use an object for named parameters
+
+       const whereClauses = [];
+
+       if (filters.category && filters.category.trim() !== '') {
+           whereClauses.push("LOWER(category) = LOWER(@category)");
+           queryParams.category = filters.category.trim();
+       }
+       if (filters.storageLocation && filters.storageLocation.trim() !== '') { // Key from frontend is 'storageLocation'
+           whereClauses.push("LOWER(storage_location) = LOWER(@storage_location)");
+           queryParams.storage_location = filters.storageLocation.trim();
+       }
+       if (filters.searchTerm && filters.searchTerm.trim() !== '') {
+           whereClauses.push("(LOWER(name) LIKE LOWER(@searchTerm) OR LOWER(sku) LIKE LOWER(@searchTerm))");
+           queryParams.searchTerm = `%${filters.searchTerm.trim()}%`;
+       }
+
+       if (whereClauses.length > 0) {
+           sql += " WHERE " + whereClauses.join(" AND ");
+       }
+       sql += " ORDER BY name COLLATE NOCASE ASC";
+
        try {
-           // Prepare and execute SQL query to select all relevant item fields
-           const stmt = db.prepare('SELECT id, name, sku, description, cost_price, quantity FROM items ORDER BY name COLLATE NOCASE');
-           const items = stmt.all(); // .all() fetches all rows
-           console.log(`IPC Main: Sending ${items.length} items`);
-           return items; // Return the array of items to the renderer
+           const stmt = db.prepare(sql);
+           // Pass queryParams directly to .all() if it contains properties, otherwise call without args
+           const items = Object.keys(queryParams).length > 0 ? stmt.all(queryParams) : stmt.all();
+
+           console.log(`[IPC Main] db:get-items: Executed SQL: ${sql}`);
+           console.log(`[IPC Main] db:get-items: With Params: ${JSON.stringify(queryParams, null, 2)}`);
+           console.log(`[IPC Main] db:get-items: Sending ${items.length} items`);
+           return items;
        } catch (error) {
-           console.error('IPC Main: Error getting items:', error);
-           throw error; // Propagate the error back to the renderer
+           console.error('[IPC Main] db:get-items: Error getting items:', error.message, error.stack);
+           throw error; // Propagate the error
        }
    });
+
+   ipcMain.handle('get-item-by-id', async (event, id) => { // Keep async if preload uses invoke
+       console.log(`Main Process: Received request for item with ID: ${id}`);
+       if (!id && id !== 0) { // Check for null, undefined, empty string, but allow 0 if it's a valid ID
+           console.error('Main Process: getItemById called without a valid ID.');
+           // Throwing an error is better as the frontend `ProductFormPage` has a try/catch
+           throw new Error('No ID provided to getItemById');
+       }
+       try {
+           // SELECT the new columns
+           const stmt = db.prepare(
+               `SELECT id, name, sku, description, cost_price, quantity, category, storage_location, variant, status, created_at, updated_at
+                FROM items WHERE id = ?`
+           );
+           const item = stmt.get(id); // better-sqlite3 get is synchronous
+
+           if (item) {
+               console.log('Main Process: Found item:', item);
+               return item; // Return the item object directly
+           } else {
+               console.log(`Main Process: Item with ID ${id} not found.`);
+               return null; // Return null if not found, frontend ProductFormPage handles this
+           }
+       } catch (error) {
+           console.error(`Main Process: Error fetching item by ID ${id}:`, error);
+           throw new Error(`Failed to retrieve item: ${error.message}`);
+       }
+   });
+
 
    // Handle request to add a new item
    ipcMain.handle('db:add-item', (event, itemData) => {
@@ -172,28 +270,41 @@
            if (!itemData || !itemData.name || itemData.name.trim() === '') {
                throw new Error("Item name is required.");
            }
+           // ADD VALIDATION for category and storage_location if they are mandatory
+           if (!itemData.category) {
+               throw new Error("Item category is required.");
+           }
+           if (!itemData.storage_location) { // Frontend sends storage_location
+               throw new Error("Item storage location is required.");
+           }
+
+
            // Prepare SQL statement for insertion with named parameters
+           // ADD category, storage_location, variant, status
            const stmt = db.prepare(
-               'INSERT INTO items (name, sku, description, cost_price, quantity) VALUES (@name, @sku, @description, @cost_price, @quantity)'
+               `INSERT INTO items (name, sku, description, cost_price, quantity, category, storage_location, variant, status)
+                VALUES (@name, @sku, @description, @cost_price, @quantity, @category, @storage_location, @variant, @status)`
            );
            // Execute the statement with data from the renderer
            const result = stmt.run({
                name: itemData.name.trim(),
-               sku: itemData.sku || null, // Use null if SKU is empty/not provided
+               sku: itemData.sku || null,
                description: itemData.description || null,
-               cost_price: itemData.cost_price || 0.0,
-               quantity: itemData.quantity || 0
+               cost_price: parseFloat(itemData.cost_price) || 0.0, // Ensure numeric
+               quantity: parseInt(itemData.quantity, 10) || 0,   // Ensure integer
+               category: itemData.category,                      // ADDED
+               storage_location: itemData.storage_location,      // ADDED (frontend sends this)
+               variant: itemData.variant || null,                // ADDED
+               status: itemData.status || 'Normal'               // ADDED (default if not provided)
            });
            console.log(`IPC Main: Added item with ID ${result.lastInsertRowid}. Changes: ${result.changes}`);
-           // Return success and the ID of the newly inserted item
            return { success: true, id: result.lastInsertRowid };
        } catch (error) {
            console.error('IPC Main: Error adding item:', error);
-           // Handle specific database errors, like UNIQUE constraint violation for SKU
            if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-                throw new Error(`SKU "${itemData.sku}" already exists. Please use a unique SKU.`);
+               throw new Error(`SKU "${itemData.sku}" already exists. Please use a unique SKU.`);
            }
-           throw error; // Propagate other errors
+           throw error;
        }
    });
 
@@ -202,55 +313,71 @@
        console.log('IPC Main: Received db:update-item request with data:', itemData);
        if (!db) throw new Error("Database not initialized");
        try {
-           // Basic validation
            if (!itemData || !itemData.id || !itemData.name || itemData.name.trim() === '') {
                throw new Error("Item ID and Name are required for update.");
            }
+           // ADD VALIDATION for category and storage_location if they are mandatory
+           if (!itemData.category) {
+               throw new Error("Item category is required for update.");
+           }
+           if (!itemData.storage_location) { // Frontend sends storage_location
+               throw new Error("Item storage location is required for update.");
+           }
+
            // Prepare SQL statement for update
+           // ADD category, storage_location, variant, status to SET clause
            const stmt = db.prepare(
-               'UPDATE items SET name = @name, sku = @sku, description = @description, cost_price = @cost_price, quantity = @quantity WHERE id = @id'
+               `UPDATE items SET
+                   name = @name,
+                   sku = @sku,
+                   description = @description,
+                   cost_price = @cost_price,
+                   quantity = @quantity,
+                   category = @category,
+                   storage_location = @storage_location,
+                   variant = @variant,
+                   status = @status,
+                   updated_at = CURRENT_TIMESTAMP
+                WHERE id = @id` // Also update updated_at manually
            );
            // Execute the update
            const result = stmt.run({
-               id: itemData.id, // ID of the item to update
+               id: itemData.id,
                name: itemData.name.trim(),
                sku: itemData.sku || null,
                description: itemData.description || null,
-               cost_price: itemData.cost_price || 0.0,
-               quantity: itemData.quantity || 0
+               cost_price: parseFloat(itemData.cost_price) || 0.0, // Ensure numeric
+               quantity: parseInt(itemData.quantity, 10) || 0,   // Ensure integer
+               category: itemData.category,                      // ADDED
+               storage_location: itemData.storage_location,      // ADDED
+               variant: itemData.variant || null,                // ADDED
+               status: itemData.status || 'Normal'               // ADDED
            });
 
-           // Check if any row was actually updated
            if (result.changes === 0) {
-               // Verify if the item ID exists at all
                const checkStmt = db.prepare('SELECT 1 FROM items WHERE id = ?');
                const exists = checkStmt.get(itemData.id);
                if (!exists) {
-                    // Throw error if trying to update a non-existent item
-                    throw new Error(`Item with ID ${itemData.id} not found for update.`);
+                   throw new Error(`Item with ID ${itemData.id} not found for update.`);
                } else {
-                    // Item exists but data was identical, no changes made
-                    console.log(`IPC Main: Item ${itemData.id} data was unchanged.`);
-                    return { success: true, unchanged: true }; // Indicate success but no change
+                   console.log(`IPC Main: Item ${itemData.id} data was unchanged or item not found.`);
+                   // If you want to distinguish between "not found" and "unchanged", you'd need another query
+                   // For now, let's assume it might be unchanged.
+                   return { success: true, message: "No changes detected or item not found.", unchanged: true };
                }
            } else {
                console.log(`IPC Main: Updated item with ID ${itemData.id}. Changes: ${result.changes}`);
            }
-           return { success: true }; // Return success
+           return { success: true };
        } catch (error) {
            console.error('IPC Main: Error updating item:', error);
-            // Handle specific errors like UNIQUE constraint violation for SKU
            if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-                throw new Error(`SKU "${itemData.sku}" already exists. Please use a unique SKU.`);
+               throw new Error(`SKU "${itemData.sku}" already exists. Please use a unique SKU.`);
            }
-           throw error; // Propagate other errors
+           throw error;
        }
    });
 
-   // Handle request to delete an item
-   // Inside your main process file (e.g., main.js)
-
-   // Make sure 'currentUser' variable is accessible in this scope
 
    ipcMain.handle('db:delete-item', async (event, itemId) => { // Or 'delete-item'
      console.log(`Main: Delete request for item ID: ${itemId}`);
@@ -295,6 +422,7 @@
         // throw new Error(`Database error during deletion: ${error.message}`);
     }
    });
+
    // --- Authentication IPC Handlers ---
 
    function readUsers() {
@@ -679,30 +807,4 @@
            return { success: false, errors: [error.message] };
        } // end of main catch for import-initial-items
    }); // end of ipcMain.handle for import-initial-items
-   ipcMain.handle('get-item-by-id', async (event, id) => {
-     console.log(`Main Process: Received request for item with ID: ${id}`); // Log request
-     if (!id) {
-         console.error('Main Process: getItemById called without an ID.');
-         return { success: false, message: 'No ID provided to getItemById' };
-         // Or just return null/undefined depending on how frontend handles it
-     }
-     try {
-       // Adjust SQL and table/column names ('items', 'id') as per your database schema
-       const stmt = db.prepare('SELECT * FROM items WHERE id = ?');
-       const item = stmt.get(id);
 
-       if (item) {
-         console.log('Main Process: Found item:', item);
-         // Important: better-sqlite3 returns the row directly. No need for { success: true, item: item }
-         // The frontend useEffect expects the item object directly if found.
-         return item;
-       } else {
-         console.log(`Main Process: Item with ID ${id} not found.`);
-         return null; // Return null if not found
-       }
-     } catch (error) {
-       console.error(`Main Process: Error fetching item by ID ${id}:`, error);
-       // Let the frontend handle the error thrown by the invoke promise
-       throw new Error(`Failed to retrieve item: ${error.message}`);
-     }
-   });
